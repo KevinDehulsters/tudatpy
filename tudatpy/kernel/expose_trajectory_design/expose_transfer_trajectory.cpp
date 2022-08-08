@@ -61,10 +61,16 @@ void expose_transfer_trajectory(py::module &m) {
                                                 get_docstring("TransferLeg").c_str());
 
     py::class_<
-            tsbm::SphericalShapingLeg,
-            std::shared_ptr<tsbm::SphericalShapingLeg>,
-            tms::TransferLeg >(m, "SphericalShapingLeg",
-                               get_docstring("SphericalShapingLeg").c_str());
+        tsbm::SphericalShapingLeg,
+        std::shared_ptr<tsbm::SphericalShapingLeg>,
+        tms::TransferLeg >(m, "SphericalShapingLeg",
+            get_docstring("SphericalShapingLeg").c_str())
+
+        //! Added by Kevin, exposing the time of flight calculation
+        .def("compute_time_of_flight_from_free_coefficient",
+            &tsbm::SphericalShapingLeg::computeTimeOfFlightFromFreeCoefficient,
+            py::arg("input_value"),
+            get_docstring("compute_time_of_flight_from_free_coefficient").c_str());
 
     py::class_<
             tsbm::HodographicShapingLeg,
@@ -231,12 +237,18 @@ void expose_transfer_trajectory(py::module &m) {
                  py::overload_cast<const int> (&tms::TransferTrajectory::getTnwThrustAccelerationsAlongTrajectory),
                  py::arg("number_of_data_points_per_leg"),
                  get_docstring("TransferTrajectory.tnw_thrust_accelerations_along_trajectory").c_str())
+            //! Added by Kevin, exposing the separate legs of the trajectory
+            .def("get_legs",
+                &tms::TransferTrajectory::getLegs,
+                get_docstring("TransferTrajectory.get_legs").c_str())
             .def_property_readonly("delta_v_per_node", &tms::TransferTrajectory::getDeltaVPerNode,
                                    get_docstring("TransferTrajectory.delta_v_per_node").c_str() )
             .def_property_readonly("delta_v_per_leg", &tms::TransferTrajectory::getDeltaVPerLeg,
                                    get_docstring("TransferTrajectory.delta_v_per_leg").c_str() )
             .def_property_readonly( "number_of_nodes", &tms::TransferTrajectory::getNumberOfNodes,
                                     get_docstring("TransferTrajectory.number_of_nodes").c_str() )
+            //.def_property_readonly("get_legs", &tms::TransferTrajectory::getLegs,
+            //    get_docstring("TransferTrajectory.get_legs").c_str())
             .def_property_readonly( "number_of_legs", &tms::TransferTrajectory::getNumberOfLegs,
                                     get_docstring("TransferTrajectory.number_of_legs").c_str() );
 
